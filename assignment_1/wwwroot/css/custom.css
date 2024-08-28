@@ -1,0 +1,51 @@
+
+.con {
+    padding: 1em 1em;
+    border-radius: 0.25em;
+}
+img {
+    border-radius: inherit;
+}
+#list{
+    /*background: linear-gradient(to left, #034c6c 10%, #034c6c 80%);*/
+    /*border-radius: 16px;*/
+    /*box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);*/
+    /*backdrop-filter: blur(2.7px);*/
+    /*-webkit-backdrop-filter: blur(2.7px);*/
+    /*border: 1px solid rgba(147, 242, 204, 0.3);*/
+    margin-top: 3em;
+}
+
+.about{
+    background: rgba(255, 255, 255, 0.44);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(2.7px);
+    -webkit-backdrop-filter: blur(2.7px);
+    border: 1px solid rgba(147, 242, 204, 0.3);
+    padding: 1em calc(1%);
+    
+}
+
+.orderedList, .unordereList {
+    margin-top: 2em;
+    list-style-type: none;
+    color: white;
+  
+}
+
+table, td, th {
+    border: 1px solid #ddd;
+    text-align: left;
+    color: white;
+    margin-top: 3em;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    padding: 15px;
+}
