@@ -47,3 +47,7 @@ table {
 th, td {
     padding: 15px;
 }
+
+.btn{
+    margin-left: 2em;
+}

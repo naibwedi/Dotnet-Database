@@ -1,65 +1,71 @@
-let one = document.getElementById('one');
-let two = document.getElementById('two');
-let three = document.getElementById('three');
-let four = document.getElementById('four');
-let five = document.getElementById('five');
-let six = document.getElementById('six');
-let seven = document.getElementById('seven');
-let eight = document.getElementById('eight');
-let nine = document.getElementById('nine');
-let zero = document.getElementById('zero');
-let btnPoint = document.getElementById('btnPoint');
-let minus = document.getElementById('minus');
-let plus = document.getElementById('plus');
-let divide = document.getElementById('divide');
-let multiply = document.getElementById('multiply');
-let clear = document.getElementById('clear');
-let equals = document.getElementById('equals');
-let txtArea = document.getElementById('myTextarea');
+document.addEventListener('DOMContentLoaded', () => {
+    const display = document.getElementById('myTextarea');
+    let currentInput = '';
+    let lastChar = '';
 
-var btnArray = [one, two, three, four, five, six , seven, eight, nine, zero, btnPoint, plus, minus, divide, multiply, clear];
+    const isOperator = (char) => ['+', '-', '*', '/'].includes(char);
 
-for (let i = 0; i < btnArray.length; i++) {
-    if (btnArray[i]) {
-        btnArray[i].addEventListener('click', () => {
-            txtArea.value += btnArray[i].value;
-        });
-    }
-}
-
-clear.addEventListener('click', () => {
-    txtArea.value = txtArea.value.substring(0, txtArea.value.length - 1);
-})
-
-reset.addEventListener('click', () => {
-    txtArea.value = '';
-})
-
-equals.addEventListener('click', () => {
-    try {
-
-        var checkString = txtArea.value.split(' ');
-        for (let i = 0; i <checkString.length ; i++) {
-            if (checkString[i]=='×'){
-                checkString[i] = '*';
-                alert(checkString[i])
+    const appendToDisplay = (value) => {
+        if (isOperator(value)) {
+            // If the last character was an operator or the display is empty, replace the last operator
+            if (isOperator(lastChar) || display.value.length === 0) {
+                // If the last input was an operator or display is empty, replace the last operator
+                currentInput = currentInput.slice(0, -1) + value;
+            } else {
+                // Append the operator
+                currentInput += value;
             }
-            if(checkString[i]=='÷'){
-                checkString[i]= '/';
-                alert(checkString[i])
-            }
+        } else {
+            // Append the number or decimal point
+            currentInput += value;
         }
+        display.value = currentInput;
+        lastChar = value;
+    };
 
-        alert(typeof checkString);
-        // Use eval to evaluate the expression
-        // txtArea.value = eval(txtArea.value);
-        txtArea.value = eval(checkString.join(' '));
-    } catch (error) {
-        // If there is an error (e.g., invalid expression), show "Error"
-        txtArea.value = 'Error';
-    }
-})
+    const calculateResult = () => {
+        try {
+            // Replace special characters with standard operators
+            let expr = currentInput
+                .replace(/×/g, '*')
+                .replace(/÷/g, '/');
 
+            // Evaluate the expression
+            display.value = eval(expr) || 'Error';
+            currentInput = display.value;
+            lastChar = '';
+        } catch (error) {
+            display.value = 'Error';
+            currentInput = '';
+        }
+    };
 
+    const buttons = [
+        'one', 'two', 'three', 'four', 'five', 'six',
+        'seven', 'eight', 'nine', 'zero', 'btnPoint',
+        'plus', 'minus', 'divide', 'multiply', 'clear', 'equals','reset'
+    ];
 
-
+    buttons.forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) {
+            btn.addEventListener('click', () => {
+                if (id === 'clear') {
+                    // Clear the last character
+                    currentInput = currentInput.slice(0, -1);
+                    display.value = currentInput;
+                    lastChar = '';
+                } else if (id === 'equals') {
+                    calculateResult();
+                } else if (id === 'reset') {
+                    // Reset the display
+                    currentInput = '';
+                    display.value = '';
+                    lastChar = '';
+                } else {
+                    appendToDisplay(btn.value);
+                }
+            });
+        }
+    });
+});
