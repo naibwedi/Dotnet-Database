@@ -3,10 +3,10 @@
     ViewBag.Title = "title";
     Layout = "_Layout";
 }
-<body class="light-theme">
+<body  class="light-theme">
     <h2 class="title">Calculator</h2>
 
-    <div class="calc-container rounded-2">
+    <div id='calc-container'class="calc-container rounded-2">
         <div class="align-self-center">
             <div class="toggle-con d-flex justify-content-between align-items-center">
                 <h3 class="p-2">Calculator</h3>
@@ -15,13 +15,13 @@
                     <label class="form-check-label" for="flexSwitchCheckDefault"></label>
                 </div>
             </div>
-            <textarea id="myTextarea" class="txt-area mt-2" readonly></textarea>
+            <textarea id="display" class="txt-area mt-2" readonly></textarea>
         </div>
         <div class="btn-container">
             <button value="7" id="seven" type="button" class="btn btn-dark btn-lg col">7</button>
             <button value="8" id="eight" type="button" class="btn btn-dark btn-lg col">8</button>
             <button value="9" id="nine" type="button" class="btn btn-dark btn-lg col">9</button>
-            <button value="C" id="clear" type="button" class="btn btn-dark btn-lg col">C</button>
+            <button value="C" id="clear" type="button" class="btn btn-dark btn-lg col">CE</button>
         </div>
         <div class="btn-container">
             <button value="4" id="four" type="button" class="btn btn-dark btn-lg col">4</button>

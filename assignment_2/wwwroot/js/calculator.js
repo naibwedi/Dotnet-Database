@@ -1,15 +1,36 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const display = document.getElementById('myTextarea');
+    
+    
+    const display = document.getElementById('display');
     let currentInput = '';
     let lastChar = '';
 
     const isOperator = (char) => ['+', '-', '*', '/'].includes(char);
 
+    const sanitizeInput = (input) => {
+        // Convert '**' to '*'
+        let sanitized = input
+            .replace(/\*\*/g, '*') // Replace '**' with '*'
+            .replace(/([+\-*\/]){2,}/g, '$1') // Replace multiple operators with a single one
+            .replace(/([+\-*\/])(\d)/g, '$1$2') // Ensure there's no operator before a number
+            .replace(/(\d)([+\-*\/])$/g, '$1'); // Remove trailing operator
+
+        // Handle cases where operator appears after operator
+        sanitized = sanitized.replace(/([+\-*\/])$/, ''); // Remove trailing operator
+
+        // Handle 'x' as 'x*x' if it ends with a single operator
+        if (/(\d)\*\*?$/.test(sanitized)) {
+            sanitized += '*';
+        }
+
+        return sanitized;
+    };
+
     const appendToDisplay = (value) => {
         if (isOperator(value)) {
             // If the last character was an operator or the display is empty, replace the last operator
             if (isOperator(lastChar) || display.value.length === 0) {
-                // If the last input was an operator or display is empty, replace the last operator
+                // Replace the last operator
                 currentInput = currentInput.slice(0, -1) + value;
             } else {
                 // Append the operator
@@ -19,31 +40,34 @@ document.addEventListener('DOMContentLoaded', () => {
             // Append the number or decimal point
             currentInput += value;
         }
-        display.value = currentInput;
+        display.value = sanitizeInput(currentInput);
         lastChar = value;
     };
 
     const calculateResult = () => {
-        try {
-            // Replace special characters with standard operators
-            let expr = currentInput
-                .replace(/×/g, '*')
-                .replace(/÷/g, '/');
-
-            // Evaluate the expression
-            display.value = eval(expr) || 'Error';
-            currentInput = display.value;
-            lastChar = '';
-        } catch (error) {
-            display.value = 'Error';
-            currentInput = '';
-        }
+     
+            // Sanitize the input before evaluating
+            let expr = sanitizeInput(currentInput)
+                .replace(/×/g, '*') // Handle custom multiplication symbol
+                .replace(/÷/g, '/'); // Handle custom division symbol
+            var newInput = expr.split('');
+           
+            if(newInput[1]== '*' && newInput[2]== '*' ){
+                var sum = newInput[0]*newInput[0];
+                display.value = sum ;
+            }else{
+                // Evaluate the sanitized expression
+                display.value = eval(expr) || 'Error';
+                currentInput = display.value;
+                lastChar = '';
+            }
+            
     };
 
     const buttons = [
         'one', 'two', 'three', 'four', 'five', 'six',
         'seven', 'eight', 'nine', 'zero', 'btnPoint',
-        'plus', 'minus', 'divide', 'multiply', 'clear', 'equals','reset'
+        'plus', 'minus', 'divide', 'multiply', 'clear', 'equals', 'reset'
     ];
 
     buttons.forEach(id => {
@@ -53,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (id === 'clear') {
                     // Clear the last character
                     currentInput = currentInput.slice(0, -1);
-                    display.value = currentInput;
+                    display.value = sanitizeInput(currentInput);
                     lastChar = '';
                 } else if (id === 'equals') {
                     calculateResult();
@@ -62,10 +86,37 @@ document.addEventListener('DOMContentLoaded', () => {
                     currentInput = '';
                     display.value = '';
                     lastChar = '';
-                } else {
+                }else {
                     appendToDisplay(btn.value);
                 }
             });
+            
+            btn.addEventListener('dblclick', () => {
+               if (id === 'multiply'){
+                       let expr = sanitizeInput(currentInput)
+                           .replace(/×/g, '*') // Handle custom multiplication symbol
+                           .replace(/÷/g, '/'); // Handle custom division symbol
+                       var newInput = expr.split('');
+                       var sum = newInput[0]*newInput[0];
+                       display.value = sum ;
+               } 
+            });
         }
     });
+    
+    
 });
+
+let formCheckInput = document.getElementById('flexSwitchCheckDefault');
+
+formCheckInput.addEventListener('change', () => {
+
+    if (formCheckInput.checked === false) {
+        document.getElementById('calc-container').style.backgroundColor = '#d6d6d6';
+        document.querySelector('h3').style.color = 'black';
+    } else if (formCheckInput.checked === true) {
+        document.getElementById('calc-container').style.backgroundColor = 'black';
+        document.querySelector('h3').style.color = 'white';
+    }
+
+})
