@@ -1,118 +1,111 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const display = document.getElementById('display');
-    let currentInput = '';
-    let lastChar = '';
+document.addEventListener("DOMContentLoaded", function() {
+    // Get the display element
+    const display = document.getElementById("display");
 
-    const isOperator = (char) => ['+', '-', '*', '/'].includes(char);
+    // Initialize state variables
+    let currentEntry = "";  // Current number or operand being entered
+    let currentResult = 0;  // Current result of the calculation
+    let lastOperator = null; // Last operator used (+, -, *, /)
 
-    const sanitizeInput = (input) => {
-        let sanitized = input;
+    // Function to update the display with the given value
+    function updateDisplay(value) {
+        display.innerText = value;
+    }
 
-        // Remove duplicate operators and handle specific cases
-        sanitized = sanitized.replace(/([+\-*/])\1+/g, '$1');
+    // Function to handle number button clicks
+    function handleNumberClick(num) {
+        currentEntry += num; // Append the clicked number to the current entry
+        updateDisplay(currentEntry); // Update the display with the new entry
+    }
 
-        // Prevent leading operator or consecutive operators
-        sanitized = sanitized.replace(/^([+\-*/])/, '');
-        sanitized = sanitized.replace(/([+\-*/])([+\-*/])/, '$1');
-
-        return sanitized;
-    };
-
-    const appendToDisplay = (value) => {
-        if (isOperator(value)) {
-            // Check for consecutive operators
-            if (isOperator(lastChar) || display.value.length === 0) {
-                return; // Do not add the operator if the last char was an operator
+    // Function to handle operator button clicks
+    function handleOperatorClick(operator) {
+        if (currentEntry !== "") {
+            // If there is a current entry, calculate the result using the last operator
+            if (lastOperator !== null) {
+                try {
+                    currentResult = eval(currentResult + lastOperator + currentEntry);
+                } catch {
+                    updateDisplay("Error");
+                    currentEntry = "";
+                    lastOperator = null;
+                    return;
+                }
+            } else {
+                // If no previous operator, set the current entry as the result
+                currentResult = parseFloat(currentEntry);
             }
+            updateDisplay(currentResult); // Update the display with the result
+            currentEntry = ""; // Clear the current entry
         }
-        currentInput += value;
-        display.value = sanitizeInput(currentInput);
-        lastChar = value;
-    };
+        lastOperator = operator; // Store the new operator
+    }
 
-    const calculateResult = () => {
-        let expr = sanitizeInput(currentInput)
-            .replace(/×/g, '*') // Handle custom multiplication symbol
-            .replace(/÷/g, '/'); // Handle custom division symbol
-
-        try {
-            // Evaluate the sanitized expression
-            let result = eval(expr);
-            display.value = isFinite(result) ? result : 'Error';
-        } catch (e) {
-            display.value = 'Error';
+    // Function to handle the equals button click
+    function handleEqualsClick() {
+        if (lastOperator !== null && currentEntry !== "") {
+            try {
+                currentResult = eval(currentResult + lastOperator + currentEntry);
+                updateDisplay(currentResult); // Update the display with the result
+            } catch {
+                updateDisplay("Error");
+            }
+            currentEntry = ""; // Clear the current entry
+            lastOperator = null; // Reset the last operator
         }
+    }
 
-        currentInput = display.value;
-        lastChar = '';
-    };
+    // Function to handle the clear entry button click
+    function handleClearEntry() {
+        currentEntry = ""; // Clear the current entry
+        updateDisplay(currentResult || 0); // Reset the display to the current result or 0
+    }
 
-    const buttons = [
-        'one', 'two', 'three', 'four', 'five', 'six',
-        'seven', 'eight', 'nine', 'zero', 'btnPoint',
-        'plus', 'minus', 'divide', 'multiply', 'clear', 'equals', 'reset'
-    ];
+    // Function to handle the reset button click
+    function handleReset() {
+        currentEntry = ""; // Clear the current entry
+        currentResult = 0; // Reset the result
+        lastOperator = null; // Reset the last operator
+        updateDisplay(0); // Reset the display to 0
+    }
 
-    buttons.forEach(id => {
-        const btn = document.getElementById(id);
-        if (btn) {
-            btn.addEventListener('click', () => {
-                if (id === 'clear') {
-                    // Clear the last character
-                    currentInput = currentInput.slice(0, -1);
-                    display.value = sanitizeInput(currentInput);
-                    lastChar = '';
-                } else if (id === 'equals') {
-                    calculateResult();
-                } else if (id === 'reset') {
-                    // Reset the display
-                    currentInput = '';
-                    display.value = '';
-                    lastChar = '';
-                } else {
-                    appendToDisplay(btn.value);
-                }
-            });
+    // Event Listeners for number buttons
+    document.getElementById("one").addEventListener("click", () => handleNumberClick("1"));
+    document.getElementById("two").addEventListener("click", () => handleNumberClick("2"));
+    document.getElementById("three").addEventListener("click", () => handleNumberClick("3"));
+    document.getElementById("four").addEventListener("click", () => handleNumberClick("4"));
+    document.getElementById("five").addEventListener("click", () => handleNumberClick("5"));
+    document.getElementById("six").addEventListener("click", () => handleNumberClick("6"));
+    document.getElementById("seven").addEventListener("click", () => handleNumberClick("7"));
+    document.getElementById("eight").addEventListener("click", () => handleNumberClick("8"));
+    document.getElementById("nine").addEventListener("click", () => handleNumberClick("9"));
+    document.getElementById("zero").addEventListener("click", () => handleNumberClick("0"));
 
-            btn.addEventListener('dblclick', () => {
-                if (id === 'multiply') {
-                    // Sanitize and prepare the current input
-                    let expr = sanitizeInput(currentInput)
-                        .replace(/×/g, '*') // Handle custom multiplication symbol
-                        .replace(/÷/g, '/'); // Handle custom division symbol
+    // Event Listeners for operator buttons
+    document.getElementById("plus").addEventListener("click", () => handleOperatorClick("+"));
+    document.getElementById("minus").addEventListener("click", () => handleOperatorClick("-"));
+    document.getElementById("multiply").addEventListener("click", () => handleOperatorClick("*"));
+    document.getElementById("divide").addEventListener("click", () => handleOperatorClick("/"));
 
-                    // Try to parse the expression and calculate the result
-                    try {
-                        // Extract the number to be squared
-                        let number = parseFloat(expr);
-                        if (!isNaN(number)) {
-                            let result = number * number; // Square the number
-                            display.value = result;
-                            currentInput = result.toString(); // Update currentInput
-                        } else {
-                            display.value = 'Error'; // Invalid number
-                        }
-                    } catch (e) {
-                        display.value = 'Error'; // Handle errors
-                    }
+    // Event Listener for equals button
+    document.getElementById("equals").addEventListener("click", handleEqualsClick);
 
-                    lastChar = ''; // Reset the last character
-                }
-            });
+    // Event Listeners for clear and reset buttons
+    document.getElementById("clear").addEventListener("click", handleClearEntry);
+    document.getElementById("reset").addEventListener("click", handleReset);
 
-        }
-    });
-
-    let formCheckInput = document.getElementById('flexSwitchCheckDefault');
-
-    formCheckInput.addEventListener('change', () => {
-        if (formCheckInput.checked === false) {
-            document.getElementById('calc-container').style.backgroundColor = '#d6d6d6';
-            document.querySelector('h3').style.color = 'black';
-        } else {
-            document.getElementById('calc-container').style.backgroundColor = 'black';
-            document.querySelector('body').style.backgroundColor = '#d6d6d6';
-            document.querySelector('h3').style.color = 'white';
+    // Handling double click on multiply button to square the last number
+    document.getElementById("multiply").addEventListener("dblclick", () => {
+        if (currentEntry !== "") {
+            try {
+                const number = parseFloat(currentEntry);
+                const result = number * number; // Square the number
+                updateDisplay(result);
+                currentEntry = result.toString(); // Update currentEntry
+                lastOperator = null; // Reset the last operator
+            } catch {
+                updateDisplay("Error");
+            }
         }
     });
 });
