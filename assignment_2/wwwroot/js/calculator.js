@@ -1,6 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    
-    
     const display = document.getElementById('display');
     let currentInput = '';
     let lastChar = '';
@@ -8,60 +6,45 @@ document.addEventListener('DOMContentLoaded', () => {
     const isOperator = (char) => ['+', '-', '*', '/'].includes(char);
 
     const sanitizeInput = (input) => {
-        // Convert '**' to '*'
-        let sanitized = input
-            .replace(/\*\*/g, '*') // Replace '**' with '*'
-            .replace(/([+\-*\/]){2,}/g, '$1') // Replace multiple operators with a single one
-            .replace(/([+\-*\/])(\d)/g, '$1$2') // Ensure there's no operator before a number
-            .replace(/(\d)([+\-*\/])$/g, '$1'); // Remove trailing operator
+        let sanitized = input;
 
-        // Handle cases where operator appears after operator
-        sanitized = sanitized.replace(/([+\-*\/])$/, ''); // Remove trailing operator
+        // Remove duplicate operators and handle specific cases
+        sanitized = sanitized.replace(/([+\-*/])\1+/g, '$1');
 
-        // Handle 'x' as 'x*x' if it ends with a single operator
-        if (/(\d)\*\*?$/.test(sanitized)) {
-            sanitized += '*';
-        }
+        // Prevent leading operator or consecutive operators
+        sanitized = sanitized.replace(/^([+\-*/])/, '');
+        sanitized = sanitized.replace(/([+\-*/])([+\-*/])/, '$1');
 
         return sanitized;
     };
 
     const appendToDisplay = (value) => {
         if (isOperator(value)) {
-            // If the last character was an operator or the display is empty, replace the last operator
+            // Check for consecutive operators
             if (isOperator(lastChar) || display.value.length === 0) {
-                // Replace the last operator
-                currentInput = currentInput.slice(0, -1) + value;
-            } else {
-                // Append the operator
-                currentInput += value;
+                return; // Do not add the operator if the last char was an operator
             }
-        } else {
-            // Append the number or decimal point
-            currentInput += value;
         }
+        currentInput += value;
         display.value = sanitizeInput(currentInput);
         lastChar = value;
     };
 
     const calculateResult = () => {
-     
-            // Sanitize the input before evaluating
-            let expr = sanitizeInput(currentInput)
-                .replace(/×/g, '*') // Handle custom multiplication symbol
-                .replace(/÷/g, '/'); // Handle custom division symbol
-            var newInput = expr.split('');
-           
-            if(newInput[1]== '*' && newInput[2]== '*' ){
-                var sum = newInput[0]*newInput[0];
-                display.value = sum ;
-            }else{
-                // Evaluate the sanitized expression
-                display.value = eval(expr) || 'Error';
-                currentInput = display.value;
-                lastChar = '';
-            }
-            
+        let expr = sanitizeInput(currentInput)
+            .replace(/×/g, '*') // Handle custom multiplication symbol
+            .replace(/÷/g, '/'); // Handle custom division symbol
+
+        try {
+            // Evaluate the sanitized expression
+            let result = eval(expr);
+            display.value = isFinite(result) ? result : 'Error';
+        } catch (e) {
+            display.value = 'Error';
+        }
+
+        currentInput = display.value;
+        lastChar = '';
     };
 
     const buttons = [
@@ -86,37 +69,50 @@ document.addEventListener('DOMContentLoaded', () => {
                     currentInput = '';
                     display.value = '';
                     lastChar = '';
-                }else {
+                } else {
                     appendToDisplay(btn.value);
                 }
             });
-            
+
             btn.addEventListener('dblclick', () => {
-               if (id === 'multiply'){
-                       let expr = sanitizeInput(currentInput)
-                           .replace(/×/g, '*') // Handle custom multiplication symbol
-                           .replace(/÷/g, '/'); // Handle custom division symbol
-                       var newInput = expr.split('');
-                       var sum = newInput[0]*newInput[0];
-                       display.value = sum ;
-               } 
+                if (id === 'multiply') {
+                    // Sanitize and prepare the current input
+                    let expr = sanitizeInput(currentInput)
+                        .replace(/×/g, '*') // Handle custom multiplication symbol
+                        .replace(/÷/g, '/'); // Handle custom division symbol
+
+                    // Try to parse the expression and calculate the result
+                    try {
+                        // Extract the number to be squared
+                        let number = parseFloat(expr);
+                        if (!isNaN(number)) {
+                            let result = number * number; // Square the number
+                            display.value = result;
+                            currentInput = result.toString(); // Update currentInput
+                        } else {
+                            display.value = 'Error'; // Invalid number
+                        }
+                    } catch (e) {
+                        display.value = 'Error'; // Handle errors
+                    }
+
+                    lastChar = ''; // Reset the last character
+                }
             });
+
         }
     });
-    
-    
+
+    let formCheckInput = document.getElementById('flexSwitchCheckDefault');
+
+    formCheckInput.addEventListener('change', () => {
+        if (formCheckInput.checked === false) {
+            document.getElementById('calc-container').style.backgroundColor = '#d6d6d6';
+            document.querySelector('h3').style.color = 'black';
+        } else {
+            document.getElementById('calc-container').style.backgroundColor = 'black';
+            document.querySelector('body').style.backgroundColor = '#d6d6d6';
+            document.querySelector('h3').style.color = 'white';
+        }
+    });
 });
-
-let formCheckInput = document.getElementById('flexSwitchCheckDefault');
-
-formCheckInput.addEventListener('change', () => {
-
-    if (formCheckInput.checked === false) {
-        document.getElementById('calc-container').style.backgroundColor = '#d6d6d6';
-        document.querySelector('h3').style.color = 'black';
-    } else if (formCheckInput.checked === true) {
-        document.getElementById('calc-container').style.backgroundColor = 'black';
-        document.querySelector('h3').style.color = 'white';
-    }
-
-})
