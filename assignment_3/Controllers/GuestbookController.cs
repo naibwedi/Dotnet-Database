@@ -14,7 +14,7 @@ public class GuestbookController : Controller
         _db = db;
     }
     // GET
-    [HttpGet]
+   [HttpGet]
     public IActionResult Index()
     {
         var guests = _db.Guests.ToList();
@@ -29,7 +29,7 @@ public class GuestbookController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return View(); 
+            return View(guest); 
         }
         
         _db.Guests.Add(guest);

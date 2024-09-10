@@ -9,7 +9,5 @@
 
 @foreach (var guest in Model)
 {
-    <li>Name: @guest.Name </li>
-    <li>Title: @guest.Title </li>
-    <li>Message: @guest.Message </li>
+    <li>@guest.Name @guest.Title</li>
 }
