@@ -1,0 +1,15 @@
+@model List<Guest>
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<h2>Guest lists</h2>
+
+@foreach (var guest in Model)
+{
+    <li>Name: @guest.Name </li>
+    <li>Title: @guest.Title </li>
+    <li>Message: @guest.Message </li>
+}

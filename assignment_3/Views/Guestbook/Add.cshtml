@@ -1,0 +1,29 @@
+@model Guest
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<h1 class="container-fluid w-75 mb-4">Guest book</h1>
+
+<div  class="container-fluid w-75">
+<form class=" w-50" >
+    <div class="form-group  mt-1">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" id="Name" type="text" class="form-control mt-3"/>
+        <span class="text-danger" asp-validation-for="Name"></span>
+    </div>
+    <div class="form-group mt-1">
+        <label asp-for="Title" ></label>
+        <input asp-for="Title" id="Title" type="text" class="form-control mt-2"/>
+        <span class="text-danger" asp-validation-for="Title"></span>
+    </div>
+ <div class="form-group mt-1">
+    <label asp-for="Message">Message</label>
+    <textarea asp-for="Message" id="Message" type="text" class="form-control mt-2"></textarea>
+    <span class="text-danger" asp-validation-for="Message"></span>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2" value="Add" id="Submit">Submit</button>
+</form>
+</div>
