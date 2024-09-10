@@ -23,6 +23,8 @@ public class GuestbookController : Controller
     
     // Post 
     
+    [HttpPost]
+    [HttpGet]
     public IActionResult Add(Guest guest)
     {
         if (!ModelState.IsValid)
